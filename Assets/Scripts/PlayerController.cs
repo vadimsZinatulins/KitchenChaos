@@ -3,31 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour, IKitchenParentObject {
 
     public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
     public class OnSelectedCounterChangedEventArgs : EventArgs {
-        public ClearCounter counter;
+        public BaseCounter counter;
     }
 
     public static PlayerController Instance { get; private set; }
 
-    [SerializeField]
-    private GameInput gameInput;
+    [SerializeField] private GameInput gameInput;
 
-    [SerializeField]
-    private LayerMask countersLayerMask;
+    [SerializeField] private LayerMask countersLayerMask;
 
-    [SerializeField]
-    private float movementSpeed = 5f;
+    [SerializeField] private Transform holdingPoint;
 
-    [SerializeField]
-    private float rotationSpeed = 5f;
+    [SerializeField] private float movementSpeed = 5f;
+
+    [SerializeField] private float rotationSpeed = 5f;
 
     private Vector3 lastInteractionDirection;
-    private ClearCounter selectedCounter;
+    private BaseCounter selectedCounter;
 
     public bool IsWalking { get; private set; }
+    public KitchenObject KitchenObject { get; set; }
+
+    public bool HasKitchenObject => KitchenObject != null;
 
     private void Start() {
         gameInput.OnInteraction += GameInput_OnInteractionAction;
@@ -44,7 +45,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void GameInput_OnInteractionAction(object sender, EventArgs e) {
-        selectedCounter?.Interact();
+        selectedCounter?.Interact(this);
     }
 
     private void HandleInteractions() {
@@ -57,9 +58,9 @@ public class PlayerController : MonoBehaviour {
 
         float interactionDistance = 2f;
         if(Physics.Raycast(transform.position, lastInteractionDirection, out RaycastHit raycastHit, interactionDistance, countersLayerMask)) {
-            if(raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter)) {
-                if(selectedCounter != clearCounter) {
-                    SetSelectedCounter(clearCounter);
+            if(raycastHit.transform.TryGetComponent<BaseCounter>(out BaseCounter counter)) {
+                if(selectedCounter != counter) {
+                    SetSelectedCounter(counter);
                 }
             } else {
                 SetSelectedCounter(null);
@@ -104,11 +105,18 @@ public class PlayerController : MonoBehaviour {
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
     }
 
-    private void SetSelectedCounter(ClearCounter selectedCounter) {
+    private void SetSelectedCounter(BaseCounter selectedCounter) {
         this.selectedCounter = selectedCounter;
 
         OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs {
             counter = selectedCounter
         });
+    }
+    public void ClearKitchenObject() {
+        KitchenObject = null;
+    }
+
+    public Transform GetKitchenObjectFollowTransform() {
+        return holdingPoint;
     }
 }
