@@ -8,16 +8,44 @@ public class PlayerController : MonoBehaviour {
     private GameInput gameInput;
 
     [SerializeField]
+    private LayerMask countersLayerMask;
+
+    [SerializeField]
     private float movementSpeed = 5f;
 
     [SerializeField]
     private float rotationSpeed = 5f;
 
+    private Vector3 lastInteractionDirection;
+
     public bool IsWalking { get; private set; }
 
     void Update() {
+        HandleMovemente();
+
+        HandleInteractions();
+    }
+
+
+    private void HandleInteractions() {
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
-        Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y).normalized;
+        Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
+
+        if(moveDirection != Vector3.zero) {
+            lastInteractionDirection = moveDirection;
+        }
+
+        float interactionDistance = 2f;
+        if(Physics.Raycast(transform.position, lastInteractionDirection, out RaycastHit raycastHit, interactionDistance, countersLayerMask)) {
+            if(raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter)) {
+                clearCounter.Interact();
+            }
+        }
+    }
+
+    private void HandleMovemente() {
+        Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+        Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
 
         float playerHeight = 2f;
         float playerRadius = 0.7f;
