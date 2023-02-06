@@ -58,7 +58,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           tag_name: Alpha-Build-${{ github.run_number }}
           release_name: Alpha Build ${{ github.run_number }}
@@ -81,7 +81,7 @@ jobs:
       - name: Upload StandaloneWindows64 Release
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./KitchenChaos-StandaloneWindows64/KitchenChaos-Windows64.zip
@@ -90,7 +90,7 @@ jobs:
       - name: Upload StandaloneLinux64 Release
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./KitchenChaos-StandaloneLinux64/KitchenChaos-Linux64.zip
