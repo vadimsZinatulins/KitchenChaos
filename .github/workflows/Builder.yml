@@ -32,7 +32,6 @@ jobs:
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
           buildName: KitchenChaos
-          projectPath: KitchenChaos
       - run: ls -R build
       - name: Upload ${{ matrix.targetPlatform }} build artifact
         uses: actions/upload-artifact@v2
