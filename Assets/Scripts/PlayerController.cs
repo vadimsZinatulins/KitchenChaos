@@ -1,8 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
+
+    public event EventHandler<OnSelectedCounterChangedEventArgs> OnSelectedCounterChanged;
+    public class OnSelectedCounterChangedEventArgs : EventArgs {
+        public ClearCounter counter;
+    }
+
+    public static PlayerController Instance { get; private set; }
 
     [SerializeField]
     private GameInput gameInput;
@@ -17,8 +25,17 @@ public class PlayerController : MonoBehaviour {
     private float rotationSpeed = 5f;
 
     private Vector3 lastInteractionDirection;
+    private ClearCounter selectedCounter;
 
     public bool IsWalking { get; private set; }
+
+    private void Start() {
+        gameInput.OnInteraction += GameInput_OnInteractionAction;
+    }
+
+    void Awake() {
+        Instance ??= this;
+    }
 
     void Update() {
         HandleMovemente();
@@ -26,6 +43,9 @@ public class PlayerController : MonoBehaviour {
         HandleInteractions();
     }
 
+    private void GameInput_OnInteractionAction(object sender, EventArgs e) {
+        selectedCounter?.Interact();
+    }
 
     private void HandleInteractions() {
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
@@ -38,8 +58,14 @@ public class PlayerController : MonoBehaviour {
         float interactionDistance = 2f;
         if(Physics.Raycast(transform.position, lastInteractionDirection, out RaycastHit raycastHit, interactionDistance, countersLayerMask)) {
             if(raycastHit.transform.TryGetComponent<ClearCounter>(out ClearCounter clearCounter)) {
-                clearCounter.Interact();
+                if(selectedCounter != clearCounter) {
+                    SetSelectedCounter(clearCounter);
+                }
+            } else {
+                SetSelectedCounter(null);
             }
+        } else {
+            SetSelectedCounter(null);
         }
     }
 
@@ -76,5 +102,13 @@ public class PlayerController : MonoBehaviour {
         IsWalking = moveDirection != Vector3.zero;
         
         transform.forward = Vector3.Slerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
+    }
+
+    private void SetSelectedCounter(ClearCounter selectedCounter) {
+        this.selectedCounter = selectedCounter;
+
+        OnSelectedCounterChanged?.Invoke(this, new OnSelectedCounterChangedEventArgs {
+            counter = selectedCounter
+        });
     }
 }
