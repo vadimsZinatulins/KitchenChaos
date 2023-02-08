@@ -8,6 +8,8 @@ public class BaseCounter : MonoBehaviour, IKitchenParentObject {
     
     public KitchenObject KitchenObject { get; set; }
     
+    public bool HasKitchenObject => KitchenObject != null;
+
     public void ClearKitchenObject() {
         KitchenObject = null;
     }
@@ -17,6 +19,10 @@ public class BaseCounter : MonoBehaviour, IKitchenParentObject {
     }
 
     public virtual void Interact(PlayerController player) {
+
+    }
+
+    public virtual void InteractAlterante(PlayerController player) {
 
     }
 }

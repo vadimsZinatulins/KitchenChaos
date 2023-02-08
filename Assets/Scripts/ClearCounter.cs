@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClearCounter : BaseCounter, IKitchenParentObject {
+public class ClearCounter : BaseCounter {
     
     [SerializeField] private KitchenObjectSO kitchenObjectPrefab;
-
-    public bool HasKitchenObject => KitchenObject != null;
 
     override public void Interact(PlayerController player) {
         if(!HasKitchenObject) {

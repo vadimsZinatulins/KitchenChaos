@@ -32,6 +32,7 @@ public class PlayerController : MonoBehaviour, IKitchenParentObject {
 
     private void Start() {
         gameInput.OnInteraction += GameInput_OnInteractionAction;
+        gameInput.OnInteractionAlterante += GameInput_OnInteractionAlternateAction;
     }
 
     void Awake() {
@@ -46,6 +47,10 @@ public class PlayerController : MonoBehaviour, IKitchenParentObject {
 
     private void GameInput_OnInteractionAction(object sender, EventArgs e) {
         selectedCounter?.Interact(this);
+    }
+
+    private void GameInput_OnInteractionAlternateAction(object sender, EventArgs e) {
+        selectedCounter?.InteractAlterante(this);
     }
 
     private void HandleInteractions() {
@@ -73,6 +78,7 @@ public class PlayerController : MonoBehaviour, IKitchenParentObject {
     private void HandleMovemente() {
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
         Vector3 moveDirection = new Vector3(inputVector.x, 0f, inputVector.y);
+        Vector3 inputMoveDirection = moveDirection.normalized;
 
         float playerHeight = 2f;
         float playerRadius = 0.7f;
@@ -102,7 +108,9 @@ public class PlayerController : MonoBehaviour, IKitchenParentObject {
 
         IsWalking = moveDirection != Vector3.zero;
         
-        transform.forward = Vector3.Slerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
+        if(IsWalking) {
+            transform.forward = Vector3.Slerp(transform.forward, inputMoveDirection, rotationSpeed * Time.deltaTime);
+        }
     }
 
     private void SetSelectedCounter(BaseCounter selectedCounter) {
