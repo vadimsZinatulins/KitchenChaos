@@ -4,16 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ProgressBarUI : MonoBehaviour {
-    [SerializeField] private CuttingCounter counter;
+    [SerializeField] private GameObject objectWithProgress;
     [SerializeField] private Image barImage;
+
+    private IHasProgress hasProgressComponent;
     
     void Start() {
-        counter.OnProgressChanged += CuttingCounter_OnProgressChanged;
+        hasProgressComponent = objectWithProgress.GetComponent<IHasProgress>();
+        
+        hasProgressComponent.OnProgressChanged += ObjectWithProgress_OnProgressChanged;
 
         SetFillAmount(0);
     }
 
-    private void CuttingCounter_OnProgressChanged(object sender, CuttingCounter.OnProgressChangedEventArgs e) {
+    private void ObjectWithProgress_OnProgressChanged(object sender, IHasProgress.OnProgressChangedEventArgs e) {
         SetFillAmount(e.progressNormalized);
     }
 
