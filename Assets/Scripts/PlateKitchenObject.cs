@@ -12,7 +12,7 @@ public class PlateKitchenObject : KitchenObject {
     [SerializeField] private List<KitchenObjectSO> validKitchenObjectSOList;
     private List<KitchenObjectSO> kitchenObjectSOList;
 
-
+    public List<KitchenObjectSO> KitchenObjectSOList => kitchenObjectSOList;
     void Awake() {
         kitchenObjectSOList = new List<KitchenObjectSO>();
     }
