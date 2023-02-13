@@ -41,6 +41,8 @@ public class StoveCounter : BaseCounter, IHasProgress {
             if(HasRecipeWithInput(player.KitchenObject.KitchenObjectSO)) {
                 player.KitchenObject.Parent = this;
 
+                fryingTimer = 0f;
+                
                 OnStateChanged?.Invoke(this, new OnStateChangedEventArgs{ on = true });
                 OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs { progressNormalized = 0f });
             }
